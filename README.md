@@ -9,5 +9,5 @@
 ### This is built using HTML, CSS, JavaScript <br/>
 
 <!-- Check<a href="https://princebansal7.github.io/Sorting-Visualizer/"> Here</a>-->
-Check<a href="https://sorting.princebansal.tech/"> Here</a>
+Check<a href="https://sorting.princebansal.in/"> Here</a>
 
