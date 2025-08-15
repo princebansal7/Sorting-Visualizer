@@ -1,46 +1,40 @@
-async function insertion(){
-    console.log('In insertion()');
-    const ele = document.querySelectorAll(".bar");
-    // color
-    ele[0].style.background = 'green';
-    for(let i = 1; i < ele.length; i++){
-        console.log('In ith loop');
+async function insertion() {
+    resetCounters();
+    resetStop();
+    const ele = document.querySelectorAll(".cell");
+    const n = ele.length;
+    ele[0].style.background = "#28a745"; // sorted: green
+    for (let i = 1; i < n; i++) {
+        if (stopRequested) return;
         let j = i - 1;
-        let key = ele[i].style.height;
-        // color
-        ele[i].style.background = 'blue';
-
+        let key = parseInt(ele[i].textContent);
+        ele[i].style.background = "#007bff"; // unsorted: blue
         await waitforme(delay);
-
-        while(j >= 0 && (parseInt(ele[j].style.height) > parseInt(key))){
-            console.log('In while loop');
-            // color
-            ele[j].style.background = 'blue';
-            ele[j + 1].style.height = ele[j].style.height;
+        while (j >= 0 && parseInt(ele[j].textContent) > key) {
+            if (stopRequested) return;
+            comparisonCount++;
+            updateCounters();
+            ele[j].style.background = "#ffc107"; // comparing: yellow
+            ele[j + 1].textContent = ele[j].textContent;
+            swapCount++;
+            updateCounters();
             j--;
-
             await waitforme(delay);
-
-            // color
-            for(let k = i; k >= 0; k--){
-                ele[k].style.background = 'green';
-            }
         }
-        ele[j + 1].style.height = key;
-        // color
-        ele[i].style.background = 'green';
+        ele[j + 1].textContent = key;
+        for (let k = 0; k <= i; k++) ele[k].style.background = "#28a745"; // sorted: green
     }
 }
 
 const inSortbtn = document.querySelector(".insertionSort");
-inSortbtn.addEventListener('click', async function(){
+inSortbtn.addEventListener("click", async function () {
     disableSortingBtn();
     disableSizeSlider();
     disableNewArrayBtn();
+    document.getElementById("stopSort").style.display = "";
     await insertion();
+    document.getElementById("stopSort").style.display = "none";
     enableSortingBtn();
     enableSizeSlider();
     enableNewArrayBtn();
 });
-
-

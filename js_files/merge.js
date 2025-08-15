@@ -1,121 +1,86 @@
 //let delay = 30;
-async function merge(ele, low, mid, high){
-    console.log('In merge()');
-    console.log(`low=${low}, mid=${mid}, high=${high}`);
+async function merge(ele, low, mid, high) {
+    if (stopRequested) return;
     const n1 = mid - low + 1;
     const n2 = high - mid;
-    console.log(`n1=${n1}, n2=${n2}`);
     let left = new Array(n1);
     let right = new Array(n2);
-
-    for(let i = 0; i < n1; i++){
+    for (let i = 0; i < n1; i++) {
+        if (stopRequested) return;
         await waitforme(delay);
-        console.log('In merge left loop');
-        console.log(ele[low + i].style.height + ' at ' + (low+i));
-        // color
-        ele[low + i].style.background = 'orange';
-        left[i] = ele[low + i].style.height;
+        ele[low + i].style.background = "#ffc107"; // left: yellow
+        left[i] = ele[low + i].textContent;
     }
-    for(let i = 0; i < n2; i++){
+    for (let i = 0; i < n2; i++) {
+        if (stopRequested) return;
         await waitforme(delay);
-        console.log('In merge right loop');
-        console.log(ele[mid + 1 + i].style.height + ' at ' + (mid+1+i));
-        // color
-        ele[mid + 1 + i].style.background = 'yellow';
-        right[i] = ele[mid + 1 + i].style.height;
+        ele[mid + 1 + i].style.background = "#007bff"; // right: blue
+        right[i] = ele[mid + 1 + i].textContent;
     }
     await waitforme(delay);
-    let i = 0, j = 0, k = low;
-    while(i < n1 && j < n2){
+    let i = 0,
+        j = 0,
+        k = low;
+    while (i < n1 && j < n2) {
+        if (stopRequested) return;
+        comparisonCount++;
+        updateCounters();
         await waitforme(delay);
-        console.log('In merge while loop');
-        console.log(parseInt(left[i]), parseInt(right[j]));
-        
-        // To add color for which two r being compared for merging
-        
-        if(parseInt(left[i]) <= parseInt(right[j])){
-            console.log('In merge while loop if');
-            // color
-            if((n1 + n2) === ele.length){
-                ele[k].style.background = 'green';
-            }
-            else{
-                ele[k].style.background = 'lightgreen';
-            }
-            
-            ele[k].style.height = left[i];
+        if (parseInt(left[i]) <= parseInt(right[j])) {
+            ele[k].textContent = left[i];
+            ele[k].style.background = "#28a745"; // sorted: green
             i++;
-            k++;
-        }
-        else{
-            console.log('In merge while loop else');
-            // color
-            if((n1 + n2) === ele.length){
-                ele[k].style.background = 'green';
-            }
-            else{
-                ele[k].style.background = 'lightgreen';
-            } 
-            ele[k].style.height = right[j];
+        } else {
+            ele[k].textContent = right[j];
+            ele[k].style.background = "#28a745";
             j++;
-            k++;
+            swapCount++;
+            updateCounters();
         }
+        k++;
     }
-    while(i < n1){
+    while (i < n1) {
+        if (stopRequested) return;
         await waitforme(delay);
-        console.log("In while if n1 is left");
-        // color
-        if((n1 + n2) === ele.length){
-            ele[k].style.background = 'green';
-        }
-        else{
-            ele[k].style.background = 'lightgreen';
-        }
-        ele[k].style.height = left[i];
+        ele[k].textContent = left[i];
+        ele[k].style.background = "#28a745";
         i++;
         k++;
     }
-    while(j < n2){
+    while (j < n2) {
+        if (stopRequested) return;
         await waitforme(delay);
-        console.log("In while if n2 is left");
-        // color
-        if((n1 + n2) === ele.length){
-            ele[k].style.background = 'green';
-        }
-        else{
-            ele[k].style.background = 'lightgreen';
-        }
-        ele[k].style.height = right[j];
+        ele[k].textContent = right[j];
+        ele[k].style.background = "#28a745";
         j++;
         k++;
     }
 }
 
-async function mergeSort(ele, l, r){
-    console.log('In mergeSort()');
-    if(l >= r){
-        console.log(`return cause just 1 elemment l=${l}, r=${r}`);
+async function mergeSort(ele, l, r) {
+    resetCounters();
+    resetStop();
+    if (l >= r || stopRequested) {
         return;
     }
     const m = l + Math.floor((r - l) / 2);
-    console.log(`left=${l} mid=${m} right=${r}`, typeof(m));
     await mergeSort(ele, l, m);
     await mergeSort(ele, m + 1, r);
     await merge(ele, l, m, r);
 }
 
 const mergeSortbtn = document.querySelector(".mergeSort");
-mergeSortbtn.addEventListener('click', async function(){
-    let ele = document.querySelectorAll('.bar');
+mergeSortbtn.addEventListener("click", async function () {
+    let ele = document.querySelectorAll(".cell");
     let l = 0;
-    let r = parseInt(ele.length) - 1;
+    let r = ele.length - 1;
     disableSortingBtn();
     disableSizeSlider();
     disableNewArrayBtn();
+    document.getElementById("stopSort").style.display = "";
     await mergeSort(ele, l, r);
+    document.getElementById("stopSort").style.display = "none";
     enableSortingBtn();
     enableSizeSlider();
     enableNewArrayBtn();
 });
-
-

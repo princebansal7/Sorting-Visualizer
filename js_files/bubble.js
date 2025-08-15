@@ -1,31 +1,46 @@
 async function bubble() {
-    console.log('In bubbe()');
-    const ele = document.querySelectorAll(".bar");
-    for(let i = 0; i < ele.length-1; i++){
-        console.log('In ith loop');
-        for(let j = 0; j < ele.length-i-1; j++){
-            console.log('In jth loop');
-            ele[j].style.background = 'blue';
-            ele[j+1].style.background = 'blue';
-            if(parseInt(ele[j].style.height) > parseInt(ele[j+1].style.height)){
-                console.log('In if condition');
+    resetCounters();
+    resetStop();
+    const ele = document.querySelectorAll(".cell");
+    const n = ele.length;
+    for (let i = 0; i < n - 1; i++) {
+        if (stopRequested) return;
+        for (let j = 0; j < n - i - 1; j++) {
+            if (stopRequested) return;
+            comparisonCount++;
+            updateCounters();
+            ele[j].style.background = "#007bff"; // unsorted: blue
+            ele[j + 1].style.background = "#007bff";
+            await waitforme(delay);
+            if (
+                parseInt(ele[j].textContent) > parseInt(ele[j + 1].textContent)
+            ) {
+                // swap values
+                let temp = ele[j].textContent;
+                ele[j].textContent = ele[j + 1].textContent;
+                ele[j + 1].textContent = temp;
+                swapCount++;
+                updateCounters();
+                ele[j].style.background = "#ffc107"; // swap: yellow
+                ele[j + 1].style.background = "#ffc107";
                 await waitforme(delay);
-                swap(ele[j], ele[j+1]);
             }
-            ele[j].style.background = 'cyan';
-            ele[j+1].style.background = 'cyan';
+            ele[j].style.background = "#e0eafc"; // reset: light
+            ele[j + 1].style.background = "#e0eafc";
         }
-        ele[ele.length-1-i].style.background = 'green';
+        ele[n - 1 - i].style.background = "#28a745"; // sorted: green
     }
-    ele[0].style.background = 'green';
+    ele[0].style.background = "#28a745";
 }
 
 const bubSortbtn = document.querySelector(".bubbleSort");
-bubSortbtn.addEventListener('click', async function(){
+bubSortbtn.addEventListener("click", async function () {
     disableSortingBtn();
     disableSizeSlider();
     disableNewArrayBtn();
+    document.getElementById("stopSort").style.display = "";
     await bubble();
+    document.getElementById("stopSort").style.display = "none";
     enableSortingBtn();
     enableSizeSlider();
     enableNewArrayBtn();
