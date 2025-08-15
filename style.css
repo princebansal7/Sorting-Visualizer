@@ -50,9 +50,6 @@ body {
 }
 
 /* Animated color transitions for sorting states */
-.cell {
-    /* default styles above */
-}
 .cell[style*="background: #007bff"] {
     /* unsorted: blue */
     animation: pop-blue 0.3s;
